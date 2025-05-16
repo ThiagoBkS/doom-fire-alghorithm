@@ -1,24 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
+
 * {
     margin: 0;
     padding: 0;
 }
 
 body {
-    background-color: #000;
-    display: grid;
+    background-color: #030303;
+    color: #fff;
+    font-family: "Russo One", sans-serif;
+    display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    color: #fff;
-    font-family: "Arial";
+}
+
+#main {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 368px;
 }
 
 #doom-fire {
     border: 2px solid #303030;
-    cursor: url("./images/fire-cursor.png"), auto;
 }
 
 .fire-controls {
     display: flex;
     flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.fire-controls .control {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 16px;
+}
+
+.fire-controls .grid-cols-2 {
+    grid-template-columns: 1fr;
+    grid-column: span 2;
+}
+
+span {
+    font-size: 1.125rem;
+}
+
+button {
+    font-family: "Russo One", sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    padding: 8px;
+    background: #444;
+    border: 2px solid #111;
+    border-radius: 4px;
+    outline: 2px solid #666;
+    color: #fff;
+}
+
+input[type=range] {
+    appearance: none;
+    width: 200px;
+    height: 10px;
+    background: #444;
+    border: 2px solid #111;
+    border-radius: 4px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: #999;
+    border: 2px solid #666;
+    width: 12px;
+    height: 16px;
+    border-radius: 2px;
+    cursor: pointer;
 }

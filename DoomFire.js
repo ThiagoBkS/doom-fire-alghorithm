@@ -13,8 +13,8 @@ export default class DoomFire {
             animation: undefined,
             lastFrameTime: undefined,
             isFireOn: false,
-            rows: 64,
-            columns: 64,
+            rows: 52,
+            columns: 52,
             decayIntensity: 3,
             fps: 24,
         };
@@ -29,8 +29,8 @@ export default class DoomFire {
 
     get cellSize() {
         return {
-            height: this.canvas.height / this.config.rows,
-            width: this.canvas.width / this.config.columns,
+            height: Math.floor(this.canvas.height / this.config.rows),
+            width: Math.floor(this.canvas.width / this.config.columns),
         }
     }
 
@@ -38,7 +38,7 @@ export default class DoomFire {
         const hoveredRow = parseInt(offsetY / this.cellSize.width);
         const hoveredColumn = parseInt(offsetX / this.cellSize.height);
 
-        const directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+        const directions = [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]
 
         directions.forEach(([dirX, dirY]) => {
             const row = Math.min(hoveredRow + dirX, Math.max(this.dataStructure.length - 1, 0));

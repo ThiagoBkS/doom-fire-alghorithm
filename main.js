@@ -4,7 +4,6 @@ const doomfire = new DoomFire(document.getElementById("doom-fire"));
 
 doomfire.start();
 
-
 // TEMPORARY CODE
 document.getElementById("change-fps").addEventListener("input", (event) => {
     doomfire.config.fps = event.target.value;
