@@ -9,9 +9,16 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    color: #fff;
+    font-family: "Arial";
 }
 
 #doom-fire {
     border: 2px solid #303030;
     cursor: url("./images/fire-cursor.png"), auto;
+}
+
+.fire-controls {
+    display: flex;
+    flex-direction: column;
 }

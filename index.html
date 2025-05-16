@@ -10,6 +10,30 @@
   <body>
     <canvas id="doom-fire" height="512" width="512"></canvas>
 
+    <!-- TEMPORARY -->
+    <div class="fire-controls">
+      <button onclick="window.location.reload()">RESET</button>
+
+      <div>
+        <span>HOVER_FADE_EFFECT</span>
+        <input id="toggle-hover-effect" type="checkbox" />
+      </div>
+
+      <div>
+        <span>CHANGE_FPS</span>
+        <input id="change-fps" type="range" min="0" max="60" />
+      </div>
+
+      <div>
+        <span>FIRE_INTENSITY</span>
+        <input id="change-fire-intensity" type="range" min="0" max="10" />
+      </div>
+      <div>
+        <span>CHANGE_PALETTE_COLOR</span>
+        <input id="change-palette-color" type="range" min="0" max="255" />
+      </div>
+    </div>
+
     <script type="module" src="main.js"></script>
   </body>
 </html>
