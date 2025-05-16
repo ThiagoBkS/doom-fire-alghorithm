@@ -1,10 +1,13 @@
 export default class DoomFire {
     constructor(canvas) {
-        this.canvas = document.getElementById("doom-fire");
+        this.canvas = canvas;
         this.context = canvas.getContext("2d");
 
         this.config = {
-            fireInterval: undefined,
+            fadeFireIntensity: 0,
+            animation: undefined,
+            lastFrameTime: undefined,
+            isFireOn: false,
             rows: 64,
             columns: 64,
             decayIntensity: 3,
@@ -12,49 +15,20 @@ export default class DoomFire {
         };
 
         this.fireColorPalette = [
-            { "r": 7, "g": 7, "b": 7 },
-            { "r": 31, "g": 7, "b": 7 },
-            { "r": 47, "g": 15, "b": 7 },
-            { "r": 71, "g": 15, "b": 7 },
-            { "r": 87, "g": 23, "b": 7 },
-            { "r": 103, "g": 31, "b": 7 },
-            { "r": 119, "g": 31, "b": 7 },
-            { "r": 143, "g": 39, "b": 7 },
-            { "r": 159, "g": 47, "b": 7 },
-            { "r": 175, "g": 63, "b": 7 },
-            { "r": 191, "g": 71, "b": 7 },
-            { "r": 199, "g": 71, "b": 7 },
-            { "r": 223, "g": 79, "b": 7 },
-            { "r": 223, "g": 87, "b": 7 },
-            { "r": 223, "g": 87, "b": 7 },
-            { "r": 215, "g": 95, "b": 7 },
-            { "r": 215, "g": 95, "b": 7 },
-            { "r": 215, "g": 103, "b": 15 },
-            { "r": 207, "g": 111, "b": 15 },
-            { "r": 207, "g": 119, "b": 15 },
-            { "r": 207, "g": 127, "b": 15 },
-            { "r": 207, "g": 135, "b": 23 },
-            { "r": 199, "g": 135, "b": 23 },
-            { "r": 199, "g": 143, "b": 23 },
-            { "r": 199, "g": 151, "b": 31 },
-            { "r": 191, "g": 159, "b": 31 },
-            { "r": 191, "g": 159, "b": 31 },
-            { "r": 191, "g": 167, "b": 39 },
-            { "r": 191, "g": 167, "b": 39 },
-            { "r": 191, "g": 175, "b": 47 },
-            { "r": 183, "g": 175, "b": 47 },
-            { "r": 183, "g": 183, "b": 47 },
-            { "r": 183, "g": 183, "b": 55 },
-            { "r": 207, "g": 207, "b": 111 },
-            { "r": 223, "g": 223, "b": 159 },
-            { "r": 239, "g": 239, "b": 199 },
-            { "r": 255, "g": 255, "b": 255 }
+            "#070707", "#1f0707", "#2f0f07", "#470f07", "#571707", "#671f07",
+            "#771f07", "#8f2707", "#9f2f07", "#af3f07", "#bf4707", "#c74707",
+            "#df4f07", "#df5707", "#df5707", "#d75f07", "#d75f07", "#d7670f",
+            "#cf6f0f", "#cf770f", "#cf7f0f", "#cf8717", "#c78717", "#c78f17",
+            "#c7971f", "#bf9f1f", "#bf9f1f", "#bfa727", "#bfa727", "#bfaf2f",
+            "#b7af2f", "#b7b72f", "#b7b737", "#cfcf6f", "#dfdf9f", "#efefc7",
+            "#ffffff"
         ];
 
         this.maxColorIntensity = this.fireColorPalette.length - 1;
-
         this.dataStructure = this.create2DArray(this.config.rows, this.config.columns);
         this.setFireSource(this.config.rows - 1, this.maxColorIntensity);
+
+        this.canvas.onmousemove = (event) => this.fadeFireOnHoverEffect(event.offsetX, event.offsetY);
     }
 
     get cellSize() {
@@ -64,16 +38,25 @@ export default class DoomFire {
         }
     }
 
+    fadeFireOnHoverEffect(offsetX, offsetY) {
+        const hoveredRow = parseInt(offsetY / this.cellSize.width);
+        const hoveredColumn = parseInt(offsetX / this.cellSize.height);
+        const directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+
+        directions.forEach(([dirX, dirY]) => {
+            const row = Math.min(hoveredRow + dirX, Math.max(this.dataStructure.length - 1, 0));
+            const column = Math.min(hoveredColumn + dirY, Math.max(this.dataStructure[row - dirX]?.length - 1, 0));
+
+            this.dataStructure[row][column] = this.config.fadeFireIntensity;
+        });
+    }
+
     create2DArray(rows, columns) {
         return Array.from(new Array(rows), () => new Array(columns).fill(0));
     }
 
     changeDecayIntensity(decay) {
         this.config.decayIntensity = decay;
-    }
-
-    changeFireColor(color) {
-        this.fireColorPalette = fireColorPalette[color] || fireColorPalette["default"];
     }
 
     setFireSource(row, colorIntensity) {
@@ -103,37 +86,49 @@ export default class DoomFire {
     }
 
     renderPixels() {
-        const imageData = this.context.createImageData(this.canvas.width, this.canvas.height);
-        const data = imageData.data;
-
         for (let row = 0; row < this.config.rows; row++) {
             for (let col = 0; col < this.config.columns; col++) {
                 const intensity = this.dataStructure[row][col];
-                const { r, g, b } = this.fireColorPalette[intensity];
+                const hexColor = this.fireColorPalette[intensity];
 
-                for (let pixelY = 0; pixelY < this.cellSize.width; pixelY++) {
-                    for (let pixelX = 0; pixelX < this.cellSize.height; pixelX++) {
-                        const pixelXIndex = Math.floor(col * this.cellSize.height + pixelX);
-                        const pixelYIndex = Math.floor(row * this.cellSize.width + pixelY);
-                        const index = (pixelYIndex * this.canvas.width + pixelXIndex) * 4;
-
-                        data[index] = r;
-                        data[index + 1] = g;
-                        data[index + 2] = b;
-                        data[index + 3] = 255;
-                    }
-                }
+                this.context.fillStyle = hexColor;
+                this.context.fillRect(
+                    col * this.cellSize.width,
+                    row * this.cellSize.height,
+                    this.cellSize.width,
+                    this.cellSize.height
+                );
             }
         }
+    }
 
-        this.context.putImageData(imageData, 0, 0);
+    clearCanvas() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    render() {
+        this.clearCanvas();
+        this.calculateFirePropagation();
+        this.renderPixels();
+    }
+
+    requestFrame(timestamp) {
+        if (!this.config.lastFrameTime) this.config.lastFrameTime = timestamp;
+        const elapsedTime = timestamp - this.config.lastFrameTime;
+
+        if (elapsedTime > 1000 / this.config.fps) {
+            this.config.lastFrameTime = timestamp;
+            this.render();
+        };
+
+        this.config.animation = requestAnimationFrame((time) => this.requestFrame(time));
     }
 
     start() {
-        this.fireInterval = setInterval(() => {
-            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.calculateFirePropagation();
-            this.renderPixels();
-        }, 1000 / this.config.fps);
+        this.config.animation = requestAnimationFrame((time) => this.requestFrame(time))
+    }
+
+    stop() {
+        cancelAnimationFrame(this.config.animation);
     }
 }
