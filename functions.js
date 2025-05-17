@@ -1,10 +1,10 @@
 export function generateHSLPalette(hue, steps) {
-    const palette = [];
+	const palette = [];
 
-    for (let step = 0; step < steps; step++) {
-        const lightness = 5 + (95 * step) / (steps - 1);
-        palette.push(`hsl(${hue}, 100%, ${lightness}%)`);
-    }
+	for (let step = 0; step < steps; step++) {
+		const lightness = 5 + (95 * step) / (steps - 1);
+		palette.push(`hsl(${hue}, 100%, ${lightness}%)`);
+	}
 
-    return palette;
+	return palette;
 }
