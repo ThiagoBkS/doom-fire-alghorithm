@@ -3,6 +3,7 @@ import CanvasRender from "./CanvasRender.js";
 
 export default class DoomFire {
     constructor(canvas) {
+        this.canvasRender = new CanvasRender(canvas);
         this.fireColorPalette = [
             "#070707",
             "#1f0707",
@@ -44,39 +45,55 @@ export default class DoomFire {
         ];
 
         this.config = {
-            isFireOn: true,
-            maxPaletteIntensity: this.fireColorPalette.length,
-            animation: undefined,
-            lastFrameTime: undefined,
-            rows: 64,
-            columns: 64,
-            decayIntensity: 3,
             fps: 24,
+            matrixSize: 64,
+            decayIntensity: 3,
+            animationFrame: undefined,
+            lastFrameTime: undefined,
+            maxPaletteIntensity: this.fireColorPalette.length,
         };
 
-        this.canvasRender = new CanvasRender(canvas, {
-            rows: this.config.rows,
-            columns: this.config.columns,
-        });
-        this.dataStructure = this.create2DArray(this.config.rows, this.config.columns);
-        this.setFireSource(this.config.rows - 1, this.config.maxPaletteIntensity);
+        this.dataStructure = this.createMatrixArray(this.config.matrixSize);
+        this.setFireSource(this.dataStructure.length - 1, this.config.maxPaletteIntensity);
     }
 
-    create2DArray(rows, columns) {
-        return Array.from({ length: rows }, () => new Array(columns).fill(0));
+    get cellSize() {
+        return {
+            height: (this.canvasRender.canvas.height / this.config.matrixSize),
+            width: (this.canvasRender.canvas.width / this.config.matrixSize),
+        }
     }
 
-    changePaletteColor(hue) {
-        this.fireColorPalette = generateHSLPalette(hue, this.config.maxPaletteIntensity);
+    changeMatrixSize(matrixSize) {
+        this.config.matrixSize = matrixSize;
+
+        this.dataStructure = this.createMatrixArray(matrixSize);
+        this.setFireSource(this.dataStructure.length - 1, this.config.maxPaletteIntensity);
+    }
+
+    changeFPS(fps) {
+        this.config.fps = fps;
+    }
+
+    changeQuality(height, width) {
+        this.canvasRender.changeSize(height, width)
     }
 
     changeDecayIntensity(decay) {
         this.config.decayIntensity = decay;
     }
 
+    changePaletteColor(hue) {
+        this.fireColorPalette = generateHSLPalette(hue, this.config.maxPaletteIntensity);
+    }
+
     changePixelIntensity(row, column, newIntensity) {
         if (this.dataStructure[row]?.[column] !== undefined)
             this.dataStructure[row][column] = newIntensity;
+    }
+
+    createMatrixArray(matrixSize) {
+        return Array.from({ length: matrixSize }, () => new Array(matrixSize).fill(0));
     }
 
     setFireSource(row, colorIntensity) {
@@ -106,12 +123,12 @@ export default class DoomFire {
     }
 
     renderCells() {
-        for (let row = 0; row < this.config.rows; row++) {
-            for (let col = 0; col < this.config.columns; col++) {
-                const intensity = this.dataStructure[row][col];
-                const hexColor = this.fireColorPalette[intensity];
+        for (let row = 0; row < this.dataStructure.length; row++) {
+            for (let column = 0; column < this.dataStructure[row].length; column++) {
+                const colorIntensity = this.dataStructure[row][column];
+                const hexColor = this.fireColorPalette[colorIntensity];
 
-                this.canvasRender.drawCell(row, col, hexColor);
+                this.canvasRender.drawCell(row, column, this.cellSize, hexColor);
             }
         }
     }
@@ -131,14 +148,14 @@ export default class DoomFire {
             this.render();
         };
 
-        this.config.animation = requestAnimationFrame((time) => this.requestFrame(time));
+        this.config.animationFrame = requestAnimationFrame((time) => this.requestFrame(time));
     }
 
     start() {
-        this.config.animation = requestAnimationFrame((time) => this.requestFrame(time))
+        this.config.animationFrame = requestAnimationFrame((time) => this.requestFrame(time))
     }
 
     stop() {
-        cancelAnimationFrame(this.config.animation);
+        cancelAnimationFrame(this.config.animationFrame);
     }
 }

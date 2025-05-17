@@ -1,26 +1,23 @@
 export default class CanvasRender {
-    constructor(canvas, config) {
+    constructor(canvas) {
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
-        this.config = config;
     }
 
-    get cellSize() {
-        return {
-            height: Math.floor(this.canvas.height / this.config.rows),
-            width: Math.floor(this.canvas.width / this.config.columns),
-        }
-    }
-
-    drawCell(row, column, hexColor) {
+    drawCell(row, column, cellSize, hexColor) {
         this.context.fillStyle = hexColor;
 
         this.context.fillRect(
-            column * this.cellSize.width,
-            row * this.cellSize.height,
-            this.cellSize.width,
-            this.cellSize.height
+            column * cellSize.width,
+            row * cellSize.height,
+            cellSize.width,
+            cellSize.height
         );
+    }
+
+    changeSize(height, width) {
+        this.canvas.height = height;
+        this.canvas.width = width;
     }
 
     clearCanvas() {
