@@ -3,7 +3,6 @@ import CanvasRender from "./CanvasRender.js";
 
 export default class DoomFire {
     constructor(canvas) {
-        this.canvasRender = new CanvasRender(canvas);
         this.fireColorPalette = [
             "#070707",
             "#1f0707",
@@ -55,12 +54,16 @@ export default class DoomFire {
             fps: 24,
         };
 
+        this.canvasRender = new CanvasRender(canvas, {
+            rows: this.config.rows,
+            columns: this.config.columns,
+        });
         this.dataStructure = this.create2DArray(this.config.rows, this.config.columns);
         this.setFireSource(this.config.rows - 1, this.config.maxPaletteIntensity);
     }
 
     create2DArray(rows, columns) {
-        return Array.from(new Array(rows), () => new Array(columns).fill(0));
+        return Array.from({ length: rows }, () => new Array(columns).fill(0));
     }
 
     changePaletteColor(hue) {
@@ -72,7 +75,7 @@ export default class DoomFire {
     }
 
     changePixelIntensity(row, column, newIntensity) {
-        if (this.dataStructure[row] && this.dataStructure[row][column])
+        if (this.dataStructure[row]?.[column] !== undefined)
             this.dataStructure[row][column] = newIntensity;
     }
 

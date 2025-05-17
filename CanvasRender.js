@@ -1,12 +1,8 @@
 export default class CanvasRender {
-    constructor(canvas) {
+    constructor(canvas, config) {
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
-
-        this.config = {
-            rows: 64,
-            columns: 64
-        }
+        this.config = config;
     }
 
     get cellSize() {

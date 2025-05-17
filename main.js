@@ -15,4 +15,3 @@ document.getElementById("change-fire-intensity").addEventListener("input", (even
     const invert = event.target.getAttribute("max") - event.target.value;
     doomfire.changeDecayIntensity(parseInt(invert + 2));
 });
-
