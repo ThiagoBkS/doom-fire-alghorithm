@@ -3,6 +3,13 @@ import DoomFire from "./DoomFire.js";
 const doomfire = new DoomFire(document.getElementById("doom-fire"));
 doomfire.start();
 
+document.querySelectorAll("[data-hue]").forEach((element) => {
+	const hue = element.dataset.hue;
+	element.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+
+	element.addEventListener("click", () => doomfire.changePaletteColor(hue));
+});
+
 document.getElementById("change-size").addEventListener("input", (event) => {
 	doomfire.changeMatrixSize(parseInt(event.target.value) * 4);
 });
@@ -12,7 +19,7 @@ document.getElementById("change-fps").addEventListener("input", (event) => {
 });
 
 document.getElementById("change-quality").addEventListener("input", (event) => {
-	const quality = parseInt(event.target.value);
+	const quality = parseInt(event.target.value * 4);
 	doomfire.changeQuality(quality, quality);
 });
 
@@ -21,10 +28,4 @@ document
 	.addEventListener("input", (event) => {
 		const invert = event.target.getAttribute("max") - event.target.value;
 		doomfire.changeDecayIntensity(parseInt(invert + 2));
-	});
-
-document
-	.getElementById("change-palette-color")
-	.addEventListener("input", (event) => {
-		doomfire.changePaletteColor(event.target.value);
 	});

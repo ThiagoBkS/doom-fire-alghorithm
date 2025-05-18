@@ -4,7 +4,7 @@ import CanvasRender from "./CanvasRender.js";
 export default class DoomFire {
 	constructor(canvas) {
 		this.canvasRender = new CanvasRender(canvas);
-		this.fireColorPalette = [
+		this.colorPalette = [
 			"#070707",
 			"#1f0707",
 			"#2f0f07",
@@ -50,9 +50,10 @@ export default class DoomFire {
 			decayIntensity: 3,
 			animationFrame: undefined,
 			lastFrameTime: undefined,
-			maxPaletteIntensity: this.fireColorPalette.length,
+			maxPaletteIntensity: this.colorPalette.length,
 		};
 
+		this.canvasRender.context.imageSmoothingEnabled = false;
 		this.dataStructure = this.createMatrixArray(this.config.matrixSize);
 		this.setFireSource(
 			this.dataStructure.length - 1,
@@ -90,7 +91,7 @@ export default class DoomFire {
 	}
 
 	changePaletteColor(hue) {
-		this.fireColorPalette = generateHSLPalette(
+		this.colorPalette = generateHSLPalette(
 			hue,
 			this.config.maxPaletteIntensity
 		);
@@ -139,7 +140,7 @@ export default class DoomFire {
 		for (let row = 0; row < this.dataStructure.length; row++) {
 			for (let column = 0; column < this.dataStructure[row].length; column++) {
 				const colorIntensity = this.dataStructure[row][column];
-				const hexColor = this.fireColorPalette[colorIntensity];
+				const hexColor = this.colorPalette[colorIntensity];
 
 				this.canvasRender.drawCell(row, column, this.cellSize, hexColor);
 			}

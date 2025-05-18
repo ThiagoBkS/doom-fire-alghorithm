@@ -4,12 +4,15 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Doom Fire - Alghorithm</title>
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 		<link rel="stylesheet" href="style.css" />
 	</head>
 
 	<body>
 		<div id="main">
-			<canvas id="doom-fire" height="512" width="512"></canvas>
+			<div class="canvas-container">
+				<canvas id="doom-fire" height="256" width="256"></canvas>
+			</div>
 
 			<div class="fire-controls">
 				<div class="control grid-cols-2">
@@ -31,8 +34,8 @@
 					<input
 						id="change-quality"
 						type="range"
-						min="16"
-						max="1024"
+						min="1"
+						max="128"
 						value="512"
 					/>
 				</div>
@@ -49,10 +52,22 @@
 				</div>
 
 				<div class="control">
-					<span>HUE Color</span>
-					<input id="change-palette-color" type="range" min="0" max="255" />
+					<span>Color</span>
+					<div class="colors-container">
+						<button data-hue="0"></button>
+						<button data-hue="50"></button>
+						<button data-hue="120"></button>
+						<button data-hue="240"></button>
+						<button data-hue="270"></button>
+						<button data-hue="300"></button>
+						<button data-hue="380"></button>
+					</div>
 				</div>
 			</div>
+
+			<a class="created-by" href="https://github.com/ThiagoBkS" target="_blank"
+				>By: ThiagoBkS</a
+			>
 		</div>
 
 		<script type="module" src="main.js"></script>
