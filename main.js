@@ -1,4 +1,4 @@
-import DoomFire from "./DoomFire.js";
+import DoomFire from "./src/DoomFire.js";
 
 const doomfire = new DoomFire(document.getElementById("doom-fire"));
 doomfire.start();

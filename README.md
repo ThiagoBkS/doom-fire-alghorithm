@@ -31,6 +31,12 @@ Entre no diretório do projeto
   cd doom-fire
 ```
 
+Rode o comando para buildar o projeto
+
+```bash
+  npm run build
+```
+
 Abra o arquivo index.html no seu navegador ou instale a extensão [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) no VSCode.
 
 ## Stack utilizada

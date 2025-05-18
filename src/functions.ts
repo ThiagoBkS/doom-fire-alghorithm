@@ -1,4 +1,4 @@
-export function generateHSLPalette(hue, steps) {
+export function generateHSLPalette(hue: number, steps: number): Array<string> {
 	const palette = [];
 
 	for (let step = 0; step < steps; step++) {

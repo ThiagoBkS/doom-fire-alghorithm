@@ -1,8 +1,23 @@
-import { generateHSLPalette } from "./functions.js";
 import CanvasRender from "./CanvasRender.js";
+import { generateHSLPalette } from "./functions.js";
+import { Size } from "./types.js";
 
 export default class DoomFire {
-	constructor(canvas) {
+	private canvas: HTMLCanvasElement;
+	private canvasRender: CanvasRender;
+	private colorPalette: Array<string>;
+	private config: {
+		fps: number;
+		matrixSize: number;
+		decayIntensity: number;
+		maxPaletteIntensity: number;
+		animationFrame: undefined | number;
+		lastFrameTime: undefined | number;
+	};
+	private dataStructure: Array<Array<number>>;
+
+	constructor(canvas: HTMLCanvasElement) {
+		this.canvas = canvas;
 		this.canvasRender = new CanvasRender(canvas);
 		this.colorPalette = [
 			"#070707",
@@ -43,83 +58,68 @@ export default class DoomFire {
 			"#efefc7",
 			"#ffffff",
 		];
-
 		this.config = {
 			fps: 24,
 			matrixSize: 64,
 			decayIntensity: 3,
+			maxPaletteIntensity: this.colorPalette.length,
 			animationFrame: undefined,
 			lastFrameTime: undefined,
-			maxPaletteIntensity: this.colorPalette.length,
 		};
 
-		this.canvasRender.context.imageSmoothingEnabled = false;
 		this.dataStructure = this.createMatrixArray(this.config.matrixSize);
-		this.setFireSource(
-			this.dataStructure.length - 1,
-			this.config.maxPaletteIntensity
-		);
+		this.setFireSource(this.dataStructure.length - 1, this.config.maxPaletteIntensity);
 	}
 
-	get cellSize() {
+	get cellSize(): Size {
 		return {
 			height: this.canvasRender.canvas.height / this.config.matrixSize,
 			width: this.canvasRender.canvas.width / this.config.matrixSize,
 		};
 	}
 
-	changeMatrixSize(matrixSize) {
+	public changeMatrixSize(matrixSize: number) {
 		this.config.matrixSize = matrixSize;
 
 		this.dataStructure = this.createMatrixArray(matrixSize);
-		this.setFireSource(
-			this.dataStructure.length - 1,
-			this.config.maxPaletteIntensity
-		);
+		this.setFireSource(this.dataStructure.length - 1, this.config.maxPaletteIntensity);
 	}
 
-	changeFPS(fps) {
+	public changeFPS(fps: number): void {
 		this.config.fps = fps;
 	}
 
-	changeQuality(height, width) {
+	public changeQuality(height: number, width: number): void {
 		this.canvasRender.changeSize(height, width);
 	}
 
-	changeDecayIntensity(decay) {
+	public changeDecayIntensity(decay: number): void {
 		this.config.decayIntensity = decay;
 	}
 
-	changePaletteColor(hue) {
-		this.colorPalette = generateHSLPalette(
-			hue,
-			this.config.maxPaletteIntensity
-		);
+	public changePaletteColor(hue: number): void {
+		this.colorPalette = generateHSLPalette(hue, this.config.maxPaletteIntensity);
 	}
 
-	changePixelIntensity(row, column, newIntensity) {
+	public changePixelIntensity(row: number, column: number, newIntensity: number): void {
 		if (this.dataStructure[row]?.[column] !== undefined)
 			this.dataStructure[row][column] = newIntensity;
 	}
 
-	createMatrixArray(matrixSize) {
-		return Array.from({ length: matrixSize }, () =>
-			new Array(matrixSize).fill(0)
-		);
+	private createMatrixArray(matrixSize: number): Array<Array<number>> {
+		return Array.from({ length: matrixSize }, () => new Array(matrixSize).fill(0));
 	}
 
-	setFireSource(row, colorIntensity) {
+	private setFireSource(row: number, colorIntensity: number): void {
 		for (let column = 0; column < this.dataStructure[row].length; column++)
 			this.dataStructure[row][column] = colorIntensity;
 	}
 
-	getBelowCellIntensity(row, column) {
-		return this.dataStructure[Math.min(row + 1, this.dataStructure.length - 1)][
-			column
-		];
+	private getBelowCellIntensity(row: number, column: number): number {
+		return this.dataStructure[Math.min(row + 1, this.dataStructure.length - 1)][column];
 	}
 
-	updateFireIntensity(row, column) {
+	private updateFireIntensity(row: number, column: number): void {
 		const decay = Math.floor(Math.random() * this.config.decayIntensity);
 
 		const belowPixel = this.getBelowCellIntensity(row, column);
@@ -128,7 +128,7 @@ export default class DoomFire {
 		this.dataStructure[row][column] = newFireIntensity;
 	}
 
-	calculateFirePropagation() {
+	private calculateFirePropagation(): void {
 		for (let row = 0; row < this.dataStructure.length - 1; row++) {
 			for (let column = 0; column < this.dataStructure[row].length; column++) {
 				this.updateFireIntensity(row, column);
@@ -136,7 +136,7 @@ export default class DoomFire {
 		}
 	}
 
-	renderCells() {
+	private renderCells(): void {
 		for (let row = 0; row < this.dataStructure.length; row++) {
 			for (let column = 0; column < this.dataStructure[row].length; column++) {
 				const colorIntensity = this.dataStructure[row][column];
@@ -147,13 +147,13 @@ export default class DoomFire {
 		}
 	}
 
-	render() {
+	private render(): void {
 		this.canvasRender.clearCanvas();
 		this.calculateFirePropagation();
 		this.renderCells();
 	}
 
-	requestFrame(timestamp) {
+	private requestFrame(timestamp: number): void {
 		if (!this.config.lastFrameTime) this.config.lastFrameTime = timestamp;
 		const elapsedTime = timestamp - this.config.lastFrameTime;
 
@@ -162,18 +162,10 @@ export default class DoomFire {
 			this.render();
 		}
 
-		this.config.animationFrame = requestAnimationFrame((time) =>
-			this.requestFrame(time)
-		);
+		this.config.animationFrame = requestAnimationFrame((time) => this.requestFrame(time));
 	}
 
-	start() {
-		this.config.animationFrame = requestAnimationFrame((time) =>
-			this.requestFrame(time)
-		);
-	}
-
-	stop() {
-		cancelAnimationFrame(this.config.animationFrame);
+	public start(): void {
+		this.config.animationFrame = requestAnimationFrame((time) => this.requestFrame(time));
 	}
 }
