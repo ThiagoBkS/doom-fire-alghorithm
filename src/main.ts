@@ -39,3 +39,13 @@ document.getElementById("change-fire-intensity")!.addEventListener("input", (eve
 
 	doomfire.changeDecayIntensity(invertValue + 2);
 });
+
+document.querySelectorAll("[data-direction]").forEach((element) => {
+	if (!(element instanceof HTMLElement)) return;
+
+	const direction = element.dataset.direction;
+
+	element.addEventListener("click", () => {
+		doomfire.changeWindDirection(String(direction));
+	});
+});

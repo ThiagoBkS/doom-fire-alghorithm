@@ -3,7 +3,6 @@ import { generateHSLPalette } from "./functions.js";
 import { Size } from "./types.js";
 
 export default class DoomFire {
-	private canvas: HTMLCanvasElement;
 	private canvasRender: CanvasRender;
 	private colorPalette: Array<string>;
 	private config: {
@@ -13,11 +12,11 @@ export default class DoomFire {
 		maxPaletteIntensity: number;
 		animationFrame: undefined | number;
 		lastFrameTime: undefined | number;
+		windDirection: number;
 	};
 	private dataStructure: Array<Array<number>>;
 
 	constructor(canvas: HTMLCanvasElement) {
-		this.canvas = canvas;
 		this.canvasRender = new CanvasRender(canvas);
 		this.colorPalette = [
 			"#070707",
@@ -65,6 +64,7 @@ export default class DoomFire {
 			maxPaletteIntensity: this.colorPalette.length,
 			animationFrame: undefined,
 			lastFrameTime: undefined,
+			windDirection: 0,
 		};
 
 		this.dataStructure = this.createMatrixArray(this.config.matrixSize);
@@ -106,6 +106,19 @@ export default class DoomFire {
 			this.dataStructure[row][column] = newIntensity;
 	}
 
+	public changeWindDirection(direction: string) {
+		switch (direction) {
+			case "LEFT":
+				this.config.windDirection = -1;
+				break;
+			case "RIGHT":
+				this.config.windDirection = 1;
+				break;
+			default:
+				this.config.windDirection = 0;
+		}
+	}
+
 	private createMatrixArray(matrixSize: number): Array<Array<number>> {
 		return Array.from({ length: matrixSize }, () => new Array(matrixSize).fill(0));
 	}
@@ -123,9 +136,12 @@ export default class DoomFire {
 		const decay = Math.floor(Math.random() * this.config.decayIntensity);
 
 		const belowPixel = this.getBelowCellIntensity(row, column);
-		const newFireIntensity = belowPixel - decay >= 0 ? belowPixel - decay : 0;
+		const newFireIntensity = Math.max(belowPixel - decay, 0);
 
-		this.dataStructure[row][column] = newFireIntensity;
+		const windOffset = Math.floor(Math.random() * 2) * this.config.windDirection;
+		const newColumn = Math.min(Math.max(column + windOffset, 0), this.config.matrixSize - 1);
+
+		this.dataStructure[row][newColumn] = newFireIntensity;
 	}
 
 	private calculateFirePropagation(): void {
