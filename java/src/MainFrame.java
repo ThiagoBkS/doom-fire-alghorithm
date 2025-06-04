@@ -1,5 +1,4 @@
 import fire.FireCanvas;
-import fire.events.ResizeListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +18,5 @@ public class MainFrame extends JFrame {
 
         FireCanvas canvas = new FireCanvas(width, height, 126, 126);
         add(canvas.getPanel(), BorderLayout.CENTER);
-
-        addComponentListener(new ResizeListener());
     }
 }
